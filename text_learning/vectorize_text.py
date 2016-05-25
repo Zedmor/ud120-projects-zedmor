@@ -3,6 +3,9 @@
 import os
 import pickle
 import re
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import NMF, LatentDirichletAllocation
+from sklearn.datasets import fetch_20newsgroups
 import sys
 
 sys.path.append( "../tools/" )
@@ -41,8 +44,8 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
     for path in from_person:
         ### only look at first 200 emails when developing
         ### once everything is working, remove this line to run over full dataset
-        temp_counter += 1
-        if temp_counter < 200:
+        #temp_counter += 1
+        #if temp_counter < 100:
             path = os.path.join('..', path[:-1])
             print path
             email = open(path, "r")
@@ -53,12 +56,20 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             ### ["sara", "shackleton", "chris", "germani"]
 
             ### append the text to word_data
+            newwords = parseOutText(email)
+            #stopwords = ["sara", "shackleton", "chris", "germani"]
+            stopwords = ["sara", "shackleton", "chris", "germani"]
+            resultwords = newwords.split()
+            #resultwords = [word for word in resultwords if word.lower() not in stopwords]
+            #word_data.append(' '.join(resultwords))
+            word_data.append(' '.join(resultwords).replace('sara', '').replace('shackleton','').replace('chris', '').replace('germani', ''))
+            from_data.append(0 if name == "sara" else 1)
 
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
 
 
             email.close()
-
+#print word_data[152]
 print "emails processed"
 from_sara.close()
 from_chris.close()
@@ -71,5 +82,6 @@ pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 
 
 ### in Part 4, do TfIdf vectorization here
-
-
+tfidf_vectorizer = TfidfVectorizer(stop_words='english')#, sublinear_tf=True, max_df= 0.5)
+tfidf = tfidf_vectorizer.fit_transform(word_data)
+print len(tfidf_vectorizer.get_feature_names()),tfidf_vectorizer.get_feature_names()[34597]

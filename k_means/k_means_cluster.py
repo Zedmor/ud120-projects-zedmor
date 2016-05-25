@@ -10,6 +10,8 @@
 import pickle
 import numpy
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import MinMaxScaler
 import sys
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
@@ -48,23 +50,39 @@ data_dict.pop("TOTAL", 0)
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
+#feature_3 = "total_payments"
 poi  = "poi"
-features_list = [poi, feature_1, feature_2]
+features_list = [poi, feature_1, feature_2]#, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
+data2 = list(featureFormat(data_dict, [feature_2], remove_NaN=True, remove_any_zeroes=True))
+#data2.remove(nan)
+
+print max(data2),min(data2)
+data2.append(numpy.array([1000000.]))
+data2scaled = MinMaxScaler()
+data2=data2scaled.fit_transform(data2)
+#print(data2scaled.get_params())
+print data2[-1]
+#print (max(finance_features(feature_2)), min(finance_features(feature_2)))
 
 ### in the "clustering with 3 features" part of the mini-project,
 ### you'll want to change this line to 
-### for f1, f2, _ in finance_features:
+#for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
 for f1, f2 in finance_features:
     plt.scatter( f1, f2 )
+    #finance_features[f1, f2] = float(finance_features[f1, f2])
 plt.show()
 
+#finance_features = [x.astype(numpy.float) for x in finance_features]
+#finance_features = finance_features.MinMaxScaler()
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
-
+clas = KMeans(n_clusters=2)
+clas.fit(finance_features)
+pred = clas.labels_
 
 
 
