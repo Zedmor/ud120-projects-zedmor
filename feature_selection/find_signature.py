@@ -1,7 +1,10 @@
 #!/usr/bin/python
 
 import pickle
+from sklearn import tree
+from sklearn.cross_validation import cross_val_score
 import numpy
+
 numpy.random.seed(42)
 
 
@@ -39,5 +42,14 @@ labels_train   = labels_train[:150]
 
 ### your code goes here
 
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(features_train,labels_train)
 
-
+print clf.score(features_test,labels_test)
+listof = clf.feature_importances_.tolist()
+#m = max(listof)
+m = [i for i in listof if i >= 0.2]
+position = [i for i,j in enumerate(listof) if j == m]
+print m, position
+allwords = vectorizer.get_feature_names()
+print allwords[position]
