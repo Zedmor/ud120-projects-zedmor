@@ -80,6 +80,27 @@ features_list=['poi']+finfeatures+emailfeatures
 data = featureFormat(my_dataset, features_list, sort_keys = False)
 labels, features = targetFeatureSplit(data)
 
+
+
+data = featureFormat(my_dataset, features_list, sort_keys = True)
+labels, features = targetFeatureSplit(data)
+from sklearn.manifold import Isomap
+iso = Isomap(n_components=2)
+data_projected = iso.fit_transform(features)
+print data_projected.shape
+import matplotlib.pyplot as plt
+xval=data_projected[:, 0]
+indx=int(np.where(xval==min(xval))[0])
+colormap = np.array(['g','r'])
+plt.scatter(data_projected[:, 0], data_projected[:, 1], c=colormap[labels],marker='o',s=50)
+#,edgecolor='none', alpha=0.1, cmap=plt.cm.get_cmap('brg', 2));
+#plt.colorbar(label='digit label', ticks=range(10))
+plt.clim(-0.5, 9.5)
+plt.show()
+
+
+#print my_dataset.keys()[indx]
+
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
@@ -106,6 +127,8 @@ print features.shape
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
+
+
 
 clf.fit(features_train,labels_train)
 
