@@ -58,9 +58,13 @@ my_dataset = data_dict
 #Featues that are basically useless (present in less than 30% of dataset or agreggation of.
 # Useless features (rare): Loan advances, director fees
 # Derivatives: Total payments, Total stock value (it's excer + restr + restr defer)
-features_list = ['poi','salary', 'deferral_payments', 'bonus', 'restricted_stock_deferred', 'deferred_income', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock']
-email_features = ['to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
+finfeatures=['salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred',
+ 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive',
+ 'restricted_stock', 'director_fees']
+emailfeatures=['to_messages',  'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
+emailadd=['email_address']
 #how many ppl have email address?
+
 
 emaillist=[]
 a=0
@@ -71,7 +75,9 @@ for keys,values in data_dict.items():
     #print values['email_address']
 print a,b
 
-data = featureFormat(my_dataset, features_list, sort_keys = True)
+features_list=['poi']+finfeatures+emailfeatures
+
+data = featureFormat(my_dataset, features_list, sort_keys = False)
 labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
@@ -81,8 +87,13 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+from sklearn.decomposition import PCA
+trans = PCA(0.99)
+#iso = PCA(0.95)
+
+#print features.shape
+features=trans.fit_transform(features)
+print features.shape
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
